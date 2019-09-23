@@ -4,8 +4,13 @@ public interface CryptoClient {
 
     String generateNewAesKey() throws RuntimeException;
 
-    String encryptWithAesKey(final String aesKeyJsonBase64String, final String decipheredText) throws RuntimeException;
+    String encryptWithAesKey(final String aesKeyBase64, final String decipheredText) throws RuntimeException;
 
-    String decryptWithAesKey(final String aesKeyJsonBase64String, final String cipheredText) throws RuntimeException;
+    String decryptWithAesKey(final String aesKeyBase64, final String cipheredTextBase64) throws RuntimeException;
 
+    String generateNewEcdsaKeyPair() throws RuntimeException;
+
+    String signWithEcdsaPrivateKey(final String ecdsaPrivateKeyBase64, final String messageToSign) throws RuntimeException;
+
+    void verifySignatureWithEcdsaPublicKey(final String ecdsaPrivateKeyBase64, final String messageToSign, final String signatureBase64);
 }

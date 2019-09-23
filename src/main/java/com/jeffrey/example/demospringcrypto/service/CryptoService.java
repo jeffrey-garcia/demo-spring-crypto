@@ -19,12 +19,25 @@ public class CryptoService {
         return cryptoClient.generateNewAesKey();
     }
 
-    public String encryptAes(String aesKeyJsonBase64String, String decipheredText) {
-        return cryptoClient.encryptWithAesKey(aesKeyJsonBase64String, decipheredText);
+    public String encryptMessageWithAes(String aesKeyBase64, String decipheredText) {
+        return cryptoClient.encryptWithAesKey(aesKeyBase64, decipheredText);
     }
 
-    public String decryptAes(String aesKeyJsonBase64String, String cipheredText) {
-        return cryptoClient.decryptWithAesKey(aesKeyJsonBase64String, cipheredText);
+    public String decryptMessageWithAes(String aesKeyBase64, String cipheredTextBase64) {
+        return cryptoClient.decryptWithAesKey(aesKeyBase64, cipheredTextBase64);
+    }
+
+    public String generateEcdsaKeyPair() {
+        return cryptoClient.generateNewEcdsaKeyPair();
+    }
+
+    public String signMessageWithEcdsa(String ecdsaPrivateKeyBase64, String messageToSign) {
+        return cryptoClient.signWithEcdsaPrivateKey(ecdsaPrivateKeyBase64, messageToSign);
+    }
+
+    public void verifyMessageWithEcdsa(String ecdsaPrivateKeyBase64, String messageToSign, String signatureBase64) {
+        cryptoClient.verifySignatureWithEcdsaPublicKey(ecdsaPrivateKeyBase64, messageToSign, signatureBase64);
+
     }
 
 }
