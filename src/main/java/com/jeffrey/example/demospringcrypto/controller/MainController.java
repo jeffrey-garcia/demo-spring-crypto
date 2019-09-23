@@ -29,6 +29,7 @@ public class MainController {
 
     /**
      * curl 'http://localhost:8080/aesEncrypt' -i -X POST -H "Content-Type: application/json" -d '{"aesKeyBase64":"ewogICAgInByaW1hcnlLZXlJZCI6IDI3NDE0NTE5NSwKICAgICJrZXkiOiBbewogICAgICAgICJrZXlEYXRhIjogewogICAgICAgICAgICAidHlwZVVybCI6ICJ0eXBlLmdvb2dsZWFwaXMuY29tL2dvb2dsZS5jcnlwdG8udGluay5BZXNHY21LZXkiLAogICAgICAgICAgICAia2V5TWF0ZXJpYWxUeXBlIjogIlNZTU1FVFJJQyIsCiAgICAgICAgICAgICJ2YWx1ZSI6ICJHaUNzRUs0K3BsWEVQYjJpajRaUWZXZGZrQzcxZ2ozRFAwRGZ4TGhUTUk2T1l3PT0iCiAgICAgICAgfSwKICAgICAgICAib3V0cHV0UHJlZml4VHlwZSI6ICJUSU5LIiwKICAgICAgICAia2V5SWQiOiAyNzQxNDUxOTUsCiAgICAgICAgInN0YXR1cyI6ICJFTkFCTEVEIgogICAgfV0KfQ==","decipheredText":"123"}'
+     * curl 'http://localhost:8080/aesEncrypt' -i -X POST -H "Content-Type: application/json" -d '{"aesKeyBase64":"YTkyMDcyNmQtYWE4YS00Njk1LTkzZjktZjIxMWM4OWMwOTMxYmE0ZTJkMTktMGEyMi00ZDU0LWJhYmQtZWFlODk4OTFiNDY5","decipheredText":"123"}'
      */
     @PostMapping(path="/aesEncrypt")
     public @ResponseBody String aesEncrypt(@RequestBody Map<String,String> requestBodyMap) {
@@ -45,6 +46,7 @@ public class MainController {
 
     /**
      * curl 'http://localhost:8080/aesDecrypt' -i -X POST -H "Content-Type: application/json" -d '{"aesKeyBase64":"ewogICAgInByaW1hcnlLZXlJZCI6IDI3NDE0NTE5NSwKICAgICJrZXkiOiBbewogICAgICAgICJrZXlEYXRhIjogewogICAgICAgICAgICAidHlwZVVybCI6ICJ0eXBlLmdvb2dsZWFwaXMuY29tL2dvb2dsZS5jcnlwdG8udGluay5BZXNHY21LZXkiLAogICAgICAgICAgICAia2V5TWF0ZXJpYWxUeXBlIjogIlNZTU1FVFJJQyIsCiAgICAgICAgICAgICJ2YWx1ZSI6ICJHaUNzRUs0K3BsWEVQYjJpajRaUWZXZGZrQzcxZ2ozRFAwRGZ4TGhUTUk2T1l3PT0iCiAgICAgICAgfSwKICAgICAgICAib3V0cHV0UHJlZml4VHlwZSI6ICJUSU5LIiwKICAgICAgICAia2V5SWQiOiAyNzQxNDUxOTUsCiAgICAgICAgInN0YXR1cyI6ICJFTkFCTEVEIgogICAgfV0KfQ==","cipheredTextBase64":"ARBXH6t5GVkWhDGSPBF2dkvJU1u+zQ8OfQsD6wJ9w+otYP9T"}'
+     * curl 'http://localhost:8080/aesDecrypt' -i -X POST -H "Content-Type: application/json" -d '{"aesKeyBase64":"YTkyMDcyNmQtYWE4YS00Njk1LTkzZjktZjIxMWM4OWMwOTMxYmE0ZTJkMTktMGEyMi00ZDU0LWJhYmQtZWFlODk4OTFiNDY5","cipheredTextBase64":"dDiIuniFpsqK7aKVUKGwgRml6sRoZ02BuzlX8l4o8w9yG7w="}'
      */
     @PostMapping(path="/aesDecrypt")
     public @ResponseBody String aesDecrypt(@RequestBody Map<String,String> requestBodyMap) {
