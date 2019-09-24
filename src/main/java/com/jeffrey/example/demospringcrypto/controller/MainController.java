@@ -88,20 +88,21 @@ public class MainController {
 
     /**
      * curl 'http://localhost:8080/ecdsaVerify' -i -X POST -H "Content-Type: application/json" -d '{"ecdsaPrivateKeyBase64":"ewogICAgInByaW1hcnlLZXlJZCI6IDE4MjExMjExMTAsCiAgICAia2V5IjogW3sKICAgICAgICAia2V5RGF0YSI6IHsKICAgICAgICAgICAgInR5cGVVcmwiOiAidHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUuY3J5cHRvLnRpbmsuRWNkc2FQcml2YXRlS2V5IiwKICAgICAgICAgICAgImtleU1hdGVyaWFsVHlwZSI6ICJBU1lNTUVUUklDX1BSSVZBVEUiLAogICAgICAgICAgICAidmFsdWUiOiAiRWswU0JnZ0RFQUlZQWhvZ2N2bkpHb205YldiVzdDbzZPY3Bna21jei8rT2p3TVp1VFg4Vm9qVXRHWEFpSVFDZkk4N0hQT0tDZDQ0MFdsdnJPZU9oT3RJVDZZblVEWU9wUG8xWUhvRTlEaG9nS1FIVGJ0VUVsRnMzMlRCMWFpaHFCcU5LaHRMZ3hUeEF4T0NudFNhU2dZVT0iCiAgICAgICAgfSwKICAgICAgICAib3V0cHV0UHJlZml4VHlwZSI6ICJUSU5LIiwKICAgICAgICAia2V5SWQiOiAxODIxMTIxMTEwLAogICAgICAgICJzdGF0dXMiOiAiRU5BQkxFRCIKICAgIH1dCn0=","message":"123","signatureBase64":"AWyMGlYwRQIhANg4aNMdARECRSwz3NNI8ia9O1mEL0+9fisjEW48CI4HAiBLmmncaoEIvsiHuG53QAIrKyEYKLhs9j6F32INUVXuPw=="}'
+     * curl 'http://localhost:8080/ecdsaVerify' -i -X POST -H "Content-Type: application/json" -d '{"ecdsaPublicKeyBase64":"ewogICAgInByaW1hcnlLZXlJZCI6IDE4MjExMjExMTAsCiAgICAia2V5IjogW3sKICAgICAgICAia2V5RGF0YSI6IHsKICAgICAgICAgICAgInR5cGVVcmwiOiAidHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUuY3J5cHRvLnRpbmsuRWNkc2FQdWJsaWNLZXkiLAogICAgICAgICAgICAia2V5TWF0ZXJpYWxUeXBlIjogIkFTWU1NRVRSSUNfUFVCTElDIiwKICAgICAgICAgICAgInZhbHVlIjogIkVnWUlBeEFDR0FJYUlITDV5UnFKdlcxbTF1d3FPam5LWUpKbk0vL2pvOERHYmsxL0ZhSTFMUmx3SWlFQW55UE94enppZ25lT05GcGI2em5qb1RyU0UrbUoxQTJEcVQ2TldCNkJQUTQ9IgogICAgICAgIH0sCiAgICAgICAgIm91dHB1dFByZWZpeFR5cGUiOiAiVElOSyIsCiAgICAgICAgImtleUlkIjogMTgyMTEyMTExMCwKICAgICAgICAic3RhdHVzIjogIkVOQUJMRUQiCiAgICB9XQp9","message":"123","signatureBase64":"AWyMGlYwRQIhANg4aNMdARECRSwz3NNI8ia9O1mEL0+9fisjEW48CI4HAiBLmmncaoEIvsiHuG53QAIrKyEYKLhs9j6F32INUVXuPw=="}'
      */
     @PostMapping(path="/ecdsaVerify")
     public @ResponseBody ResponseEntity ecdsaVerify(@RequestBody Map<String,String> requestBodyMap) {
         LOGGER.debug("ecdsaVerify");
 
-        String ecdsaPrivateKeyBase64 = requestBodyMap.get("ecdsaPrivateKeyBase64");
+        String ecdsaPublicKeyBase64 = requestBodyMap.get("ecdsaPublicKeyBase64");
         String message = requestBodyMap.get("message");
         String signatureBase64 = requestBodyMap.get("signatureBase64");
 
-        Assert.notNull(ecdsaPrivateKeyBase64, "ecdsaPrivateKeyBase64 should not be null");
+        Assert.notNull(ecdsaPublicKeyBase64, "ecdsaPublicKeyBase64 should not be null");
         Assert.notNull(message, "message should not be null");
         Assert.notNull(signatureBase64, "signatureBase64 should not be null");
 
-        cryptoService.verifyMessageWithEcdsa(ecdsaPrivateKeyBase64, message, signatureBase64);
+        cryptoService.verifyMessageWithEcdsa(ecdsaPublicKeyBase64, message, signatureBase64);
         return ResponseEntity.ok().build();
     }
 }

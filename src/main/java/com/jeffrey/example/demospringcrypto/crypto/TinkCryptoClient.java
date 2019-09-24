@@ -147,11 +147,12 @@ public class TinkCryptoClient implements CryptoClient {
     }
 
     @Override
-    public void verifySignatureWithEcdsaPublicKey(final String ecdsaPrivateKeyJBase64, final String messageToSign, final String signatureBase64) {
+    public void verifySignatureWithEcdsaPublicKey(final String ecdsaPublicKeyJBase64, final String messageToSign, final String signatureBase64) {
         try {
-            byte [] privateKeyByteArray = BaseEncoding.base64().decode(ecdsaPrivateKeyJBase64);
-            KeysetHandle privateKeysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withBytes(privateKeyByteArray));
-            KeysetHandle publicKeysetHandle = privateKeysetHandle.getPublicKeysetHandle();
+            byte[] publicKeyByteArray = BaseEncoding.base64().decode(ecdsaPublicKeyJBase64);
+            KeysetHandle publicKeysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withBytes(publicKeyByteArray));
+            String publicKeyJsonString = new String(publicKeyByteArray);
+            LOGGER.debug("public key json: {}", publicKeyJsonString);
 
             PublicKeyVerify verifier = publicKeysetHandle.getPrimitive(PublicKeyVerify.class);
             verifier.verify(BaseEncoding.base64().decode(signatureBase64), messageToSign.getBytes());
