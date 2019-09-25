@@ -6,11 +6,13 @@ import com.google.crypto.tink.*;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AeadKeyTemplates;
 import com.google.crypto.tink.config.TinkConfig;
+import com.google.crypto.tink.mac.MacKeyTemplates;
 import com.google.crypto.tink.signature.SignatureKeyTemplates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.security.GeneralSecurityException;
 
 public class TinkCryptoClient implements CryptoClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinkCryptoClient.class);
@@ -122,19 +124,19 @@ public class TinkCryptoClient implements CryptoClient {
             return privateKeyJsonString;
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
 
     }
 
     @Override
-    public String signWithEcdsaPrivateKey(final String ecdsaPrivateKeyJBase64, final String messageToSign) {
+    public String signWithEcdsaPrivateKey(final String ecdsaPrivateKeyBase64, final String message) {
         try {
-            byte [] privateKeyByteArray = BaseEncoding.base64().decode(ecdsaPrivateKeyJBase64);
+            byte [] privateKeyByteArray = BaseEncoding.base64().decode(ecdsaPrivateKeyBase64);
             KeysetHandle privateKeysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withBytes(privateKeyByteArray));
 
             PublicKeySign signer = privateKeysetHandle.getPrimitive(PublicKeySign.class);
-            byte[] signature = signer.sign(messageToSign.getBytes());
+            byte[] signature = signer.sign(message.getBytes());
 
             String signatureBase64String = BaseEncoding.base64().encode(signature);
             LOGGER.debug("signature in base64: {}", signatureBase64String);
@@ -147,20 +149,76 @@ public class TinkCryptoClient implements CryptoClient {
     }
 
     @Override
-    public void verifySignatureWithEcdsaPublicKey(final String ecdsaPublicKeyJBase64, final String messageToSign, final String signatureBase64) {
+    public void verifySignatureWithEcdsaPublicKey(final String ecdsaPublicKeyBase64, final String message, final String signatureBase64) {
         try {
-            byte[] publicKeyByteArray = BaseEncoding.base64().decode(ecdsaPublicKeyJBase64);
+            byte[] publicKeyByteArray = BaseEncoding.base64().decode(ecdsaPublicKeyBase64);
             KeysetHandle publicKeysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withBytes(publicKeyByteArray));
             String publicKeyJsonString = new String(publicKeyByteArray);
             LOGGER.debug("public key json: {}", publicKeyJsonString);
 
             PublicKeyVerify verifier = publicKeysetHandle.getPrimitive(PublicKeyVerify.class);
-            verifier.verify(BaseEncoding.base64().decode(signatureBase64), messageToSign.getBytes());
+            verifier.verify(BaseEncoding.base64().decode(signatureBase64), message.getBytes());
 
             LOGGER.debug("message's signature verified successfully");
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public String generateNewHmacSha2Key() {
+        try {
+            KeysetHandle hmacKeysetHandle = KeysetHandle.generateNew(MacKeyTemplates.HMAC_SHA256_128BITTAG);
+            ByteArrayOutputStream hmacKeyOutputStream = new ByteArrayOutputStream();
+            CleartextKeysetHandle.write(hmacKeysetHandle, JsonKeysetWriter.withOutputStream(hmacKeyOutputStream));
+            LOGGER.debug("hmac key json: {}", hmacKeysetHandle);
+
+            byte[] hmacKeyByteArray = ByteStreams.newDataOutput(hmacKeyOutputStream).toByteArray();
+            String hmacKeyBase64 = BaseEncoding.base64().encode(hmacKeyByteArray);
+            LOGGER.debug("hmac key base64: {}", hmacKeyBase64);
+
+            return hmacKeyBase64;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String computeAuthTagWithHmacKey(final String hmacKeyBase64, final String message) {
+        try {
+            byte[] hmacKeyByteArray = BaseEncoding.base64().decode(hmacKeyBase64);
+            KeysetHandle hmacKeysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withBytes(hmacKeyByteArray));
+
+            Mac mac = hmacKeysetHandle.getPrimitive(Mac.class);
+
+            byte[] tag = mac.computeMac(message.getBytes());
+            String authTagBase64 = BaseEncoding.base64().encode(tag);
+            LOGGER.debug("authentication tag: {}", authTagBase64);
+
+            return authTagBase64;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void verifyAuthTagWithHmacKey(String hmacKeyBase64, String message, String authTagBase64) {
+        try {
+            byte[] hmacKeyByteArray = BaseEncoding.base64().decode(hmacKeyBase64);
+            KeysetHandle hmacKeysetHandle = CleartextKeysetHandle.read(JsonKeysetReader.withBytes(hmacKeyByteArray));
+
+            Mac mac = hmacKeysetHandle.getPrimitive(Mac.class);
+
+            byte[] authTagByteArray = BaseEncoding.base64().decode(authTagBase64);
+
+            mac.verifyMac(authTagByteArray, message.getBytes());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
 }

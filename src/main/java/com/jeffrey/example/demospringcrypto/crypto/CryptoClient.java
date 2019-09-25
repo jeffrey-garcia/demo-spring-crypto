@@ -10,7 +10,14 @@ public interface CryptoClient {
 
     String generateNewEcdsaKeyPair() throws RuntimeException;
 
-    String signWithEcdsaPrivateKey(final String ecdsaPrivateKeyBase64, final String messageToSign) throws RuntimeException;
+    String signWithEcdsaPrivateKey(final String ecdsaPrivateKeyBase64, final String message) throws RuntimeException;
 
-    void verifySignatureWithEcdsaPublicKey(final String ecdsaPrivateKeyBase64, final String messageToSign, final String signatureBase64);
+    void verifySignatureWithEcdsaPublicKey(final String ecdsaPrivateKeyBase64, final String message, final String signatureBase64) throws RuntimeException;
+
+    String generateNewHmacSha2Key() throws RuntimeException;
+
+    String computeAuthTagWithHmacKey(final String hmacKeyBase64,final String message) throws RuntimeException;
+
+    void verifyAuthTagWithHmacKey(final String hmacKeyBase64, final String message, final String authTagBase64);
+
 }

@@ -56,16 +56,38 @@ public class SpringCryptoClient implements CryptoClient {
 
     @Override
     public String generateNewEcdsaKeyPair() throws RuntimeException {
+        // TODO: to be implemented
         return null;
     }
 
     @Override
-    public String signWithEcdsaPrivateKey(String ecdsaPrivateKeyBase64, String messageToSign) throws RuntimeException {
+    public String signWithEcdsaPrivateKey(String ecdsaPrivateKeyBase64, String message) throws RuntimeException {
+        // TODO: to be implemented
         return null;
     }
 
     @Override
-    public void verifySignatureWithEcdsaPublicKey(String ecdsaPrivateKeyBase64, String messageToSign, String signatureBase64) {
-
+    public void verifySignatureWithEcdsaPublicKey(String ecdsaPrivateKeyBase64, String message, String signatureBase64) {
+        // TODO: to be implemented
+        return;
     }
+
+    @Override
+    public String generateNewHmacSha2Key() {
+        // TODO: to be implemented
+        return null;
+    }
+
+    @Override
+    public String computeAuthTagWithHmacKey(String hmacKeyBase64, String message) throws RuntimeException {
+        // TODO: to be implemented
+        return null;
+    }
+
+    @Override
+    public void verifyAuthTagWithHmacKey(String hmacKeyBase64, String message, String authTagBase64) {
+        // TODO: to be implemented
+        return;
+    }
+
 }
