@@ -1,6 +1,6 @@
 # A demo project of simple Cryptographic operations
 A demo project using Google Tink library for providing simple and secure API
-for common cryptographic operations at the application-level, such as:
+for general cryptographic operations at the application-level, such as:
 - symmetric encryption
 - message authentication
 - digital signatures
@@ -28,10 +28,10 @@ features from scratch and re-inventing a good old wheel.
 Yet in certain cases where we must fulfill the requirements from either business
 or local regulators, a more stringent security control is needed to further
 encrypts the user's data on top of the 3rd party vendor's platform/product,
-this is where our in-house cryptographic solution comes into play. For example,
+this is where an in-house cryptographic solution comes into play. For example,
 by adding another layer of encryption at the application level, we can isolate
 the data from different countries/markets hosted inside a shared persistent
-storage facility.
+storage facility managed by the cloud's platform provider.
 
 <br/>
 
@@ -51,7 +51,7 @@ resources
 
 <br/>
 
-##### Digitial Signing
+##### Digital Signing
 The application-level digital signing uses ECDSA, due to following rationale:
 
 - with ECDSA we can get the same level of security as RSA but with smaller keys. Smaller keys are better than larger keys for several reasons.
@@ -61,12 +61,17 @@ The application-level digital signing uses ECDSA, due to following rationale:
 - Bitcoin is a good example of a system that relies on ECDSA for security. Every Bitcoin address is a cryptographic hash of an ECDSA public key.
 The ownership of the account is determined by who controls the ECDSA private key.
 
-A 256-bit elliptic curve key provides as much protection as a 3,248-bit asymmetric key. Typical RSA keys in website certificates are 2048-bits. If we compare the portion of the TLS handshake that happens on the server for 256-bit ECDSA keys against the cryptographically much weaker 2048-bit RSA keys, using an ECDSA certificate reduces the cost of the private key operation by a factor of 9.5x, saving a lot of CPU cycles, this had been proved by past analysis from domain expert.
+A 256-bit elliptic curve key provides as much protection as a 3,248-bit asymmetric key. 
+Typical RSA keys in website certificates are 2048-bits. If we compare the portion of the 
+TLS handshake that happens on the server for 256-bit ECDSA keys against the cryptographically 
+much weaker 2048-bit RSA keys, using an ECDSA certificate reduces the cost of the private 
+key operation by a factor of 9.5x, saving a lot of CPU cycles, this had been proved by past 
+analysis from domain expert.
 
 <br/>
 
-##### Cryptographical Library of Choice
-We use a common cryptographic library, Google Tink, to implement cryptographic
+##### Cryptographic Library of Choice
+We use a general-purpose cryptographic library, Google Tink, to implement cryptographic
 features consistently across almost the applications. This provides the following
 advantages:
 
@@ -84,8 +89,8 @@ key management systems like [AWS KMS](https://aws.amazon.com/kms/) or [Google Cl
 and key management abilities without having to fork the library.
 - Tink is a crypto library written by a group of cryptographers and security
 engineers at Google. It was born out of our extensive experience working with
-Google's product teams, [fixing weaknesses in implementations](https://github.com/google/wycheproof), and providing
-simple APIs that can be used safely without needing a crypto background.
+Google's product teams, [fixing weaknesses in implementations](https://github.com/google/wycheproof), 
+and providing simple APIs that can be used safely without needing a crypto background.
 
 <br/>
 
@@ -102,7 +107,7 @@ operations as a set of simple API with a pre-defined algorithm. Such as:
 - computer/verify the hashing with HMAC SHA256 128-bit
 
 The common library can also switch to use other cryptographic library,
-for example spring-crypto API. This can easily achieved by creating a
+for example spring-crypto API. This can be easily achieved by creating a
 bean that conform to the methods defined through the interface `CryptoClient`.
 The idea is to have developers to less worry about the underlying mechanics
 to implement a cryptographic feature, they could just use it whenever they

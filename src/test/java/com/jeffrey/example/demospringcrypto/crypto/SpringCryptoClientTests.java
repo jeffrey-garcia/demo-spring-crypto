@@ -1,7 +1,7 @@
 package com.jeffrey.example.demospringcrypto.crypto;
 
+import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
-import org.assertj.core.util.Strings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,13 +12,13 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TinkCryptoClientTest {
+public class SpringCryptoClientTests {
 
     private CryptoClient cryptoClient;
 
     @Before
-    public void init() throws Exception {
-        this.cryptoClient = new TinkCryptoClient();
+    public void init() {
+        this.cryptoClient = new SpringCryptoClient();
     }
 
     @Test
@@ -75,25 +75,4 @@ public class TinkCryptoClientTest {
         lock.await(2500L, TimeUnit.MILLISECONDS);
         Assert.assertEquals(0, lock.getCount());
     }
-
-    @Test
-    public void generateNewHmacSha2Key() throws RuntimeException {
-        String hmacBase64 = this.cryptoClient.generateNewHmacSha2Key();
-        Assert.assertFalse(Strings.isNullOrEmpty(hmacBase64));
-
-        String hmacKey = new String(BaseEncoding.base64().decode(hmacBase64));
-        Assert.assertFalse(Strings.isNullOrEmpty(hmacKey));
-    }
-
-    @Test
-    public void hashAndVerify() throws RuntimeException {
-        String hmacBase64 = this.cryptoClient.generateNewHmacSha2Key();
-        String message = UUID.randomUUID().toString();
-
-        String authTagBase64 = this.cryptoClient.computeAuthTagWithHmacKey(hmacBase64, message);
-        Assert.assertFalse(Strings.isNullOrEmpty(authTagBase64));
-
-        this.cryptoClient.verifyAuthTagWithHmacKey(hmacBase64, message, authTagBase64);
-    }
-
 }
