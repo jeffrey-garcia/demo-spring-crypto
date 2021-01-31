@@ -5,6 +5,12 @@ import com.google.common.io.BaseEncoding;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.encrypt.BytesEncryptor;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -28,6 +34,61 @@ public class SpringCryptoClientTests {
 
         String aesKey = new String(BaseEncoding.base64().decode(aesKeyBase64));
         Assert.assertFalse(Strings.isNullOrEmpty(aesKey));
+    }
+
+    @Test
+    public void encrypt() {
+        String password = "admin";
+        String keyName = "TestDEK";
+
+        // --- debug only --- //
+//        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//        String hashedPassword = passwordEncoder.encode(password);
+//        boolean isMatched = passwordEncoder.matches(password, "{bcrypt}$2a$10$gt2SPrz.JoZC8qC38zDgiOjgOM3uz5p7BFdbGQ8sdJa/LBB/h6Z/a");
+        String hashedPassword = "{bcrypt}$2a$10$gt2SPrz.JoZC8qC38zDgiOjgOM3uz5p7BFdbGQ8sdJa/LBB/h6Z/a";
+
+        BytesEncryptor encryptor = Encryptors.stronger(
+                // convert to HEX before passing into encryptors
+                BaseEncoding.base16().encode(password.getBytes()),
+                BaseEncoding.base16().encode(hashedPassword.getBytes())
+        );
+        String cipheredKeyName = BaseEncoding.base64().encode(encryptor.encrypt(keyName.getBytes()));
+
+        // determine if hashedPassword or cipheredKeyName is longer
+        int hashedPasswordLength = hashedPassword.length();
+        int cipheredKeyNameLength = cipheredKeyName.length();
+
+        int size = Math.max(hashedPasswordLength, cipheredKeyNameLength);
+
+        String secret = String.format("%-" + size + "s", hashedPassword) +
+                        String.format("%-" + size + "s", cipheredKeyName);
+
+        int secretLength = secret.length();
+        // --- for debug only --- //
+//        String decipheredText = String.format("%-" + hashedPassword.length() + "s", "TestDEK");
+//        int length = decipheredText.length();
+
+        System.out.println();
+        Assert.assertEquals(keyName, decrypt(password, secret));
+    }
+
+    private String decrypt(String password, String secret) {
+        String hashedPassword = StringUtils.trimTrailingWhitespace(secret.substring(0, secret.length()/2));
+        String cipheredKeyName = StringUtils.trimTrailingWhitespace(secret.substring(secret.length()/2));
+
+        // verify password
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        if (passwordEncoder.matches(password, hashedPassword)) {
+            // if password is correct, use the password and hashed password to decrypt the key name
+            BytesEncryptor encryptor = Encryptors.stronger(
+                    // convert to HEX before passing into encryptors
+                    BaseEncoding.base16().encode(password.getBytes()),
+                    BaseEncoding.base16().encode(hashedPassword.getBytes())
+            );
+            byte[] decipheredKeyName = encryptor.decrypt(BaseEncoding.base64().decode(cipheredKeyName));
+            return new String(decipheredKeyName);
+        }
+        return null;
     }
 
     @Test
