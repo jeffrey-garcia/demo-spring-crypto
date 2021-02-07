@@ -39,13 +39,15 @@ public class SpringCryptoClientTests {
     @Test
     public void encrypt() {
         String password = "admin";
-        String keyName = "TestDEK";
+        String keyName = "YODA-DEK";
 
         // --- debug only --- //
-//        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//        String hashedPassword = passwordEncoder.encode(password);
-//        boolean isMatched = passwordEncoder.matches(password, "{bcrypt}$2a$10$gt2SPrz.JoZC8qC38zDgiOjgOM3uz5p7BFdbGQ8sdJa/LBB/h6Z/a");
-        String hashedPassword = "{bcrypt}$2a$10$gt2SPrz.JoZC8qC38zDgiOjgOM3uz5p7BFdbGQ8sdJa/LBB/h6Z/a";
+//        String _secret = "{bcrypt}$2a$10$QYnG/AXdg89lCEGBFyK9Rejb5Hmo6Fe8le7JpFoJ16/0LiKpbXMhmear9e+iZ2gmAdwGUpuN//18jk8KElczkeigOMM7quTmrHirjOXjeIg==            ";
+//        String hashedPassword = _secret.substring(0, _secret.length()/2);
+
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+        boolean isMatched = passwordEncoder.matches(password, hashedPassword);
 
         BytesEncryptor encryptor = Encryptors.stronger(
                 // convert to HEX before passing into encryptors
@@ -62,9 +64,10 @@ public class SpringCryptoClientTests {
 
         String secret = String.format("%-" + size + "s", hashedPassword) +
                         String.format("%-" + size + "s", cipheredKeyName);
+        System.out.println("[" + secret + "]");
 
-        int secretLength = secret.length();
         // --- for debug only --- //
+//        int secretLength = secret.length();
 //        String decipheredText = String.format("%-" + hashedPassword.length() + "s", "TestDEK");
 //        int length = decipheredText.length();
 
